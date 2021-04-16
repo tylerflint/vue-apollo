@@ -4,8 +4,6 @@ import {
   isRef,
   computed,
   watch,
-  // @ts-expect-error
-  onServerPrefetch,
   getCurrentInstance,
   onBeforeUnmount,
   nextTick,
@@ -167,22 +165,6 @@ export function useQueryImpl<
   // SSR
   let firstResolve: Function | undefined
   let firstReject: Function | undefined
-  onServerPrefetch?.(() => {
-    if (!isEnabled.value || (isServer && currentOptions.value.prefetch === false)) return
-
-    return new Promise((resolve, reject) => {
-      firstResolve = () => {
-        resolve()
-        firstResolve = undefined
-        firstReject = undefined
-      }
-      firstReject = (error: Error) => {
-        reject(error)
-        firstResolve = undefined
-        firstReject = undefined
-      }
-    }).then(stop).catch(stop)
-  })
 
   // Apollo Client
   const { resolveClient } = useApolloClient()
